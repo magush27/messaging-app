@@ -38,27 +38,22 @@ const messages = [];
 app.post('/api/register', (req, res) => {
     const { username, password } = req.body;
 
-    // Validate the input
     if (!username || !password) {
         return res.status(400).json({ error: 'Invalid username or password' });
     }
 
-    // Check if the username is already taken
     const existingUser = users.find((user) => user.username === username);
     if (existingUser) {
         return res.status(409).json({ error: 'Username already taken' });
     }
 
-    // Create a new user object
     const newUser = {
         username,
         password,
     };
 
-    // Add the user object to the users array
     users.push(newUser);
 
-    // Return a response indicating success
     res.status(201).json({ message: 'User registered successfully' });
 });
 
@@ -67,21 +62,16 @@ app.post('/api/register', (req, res) => {
  */
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
-
-    // Validate the input
     if (!username || !password) {
         return res.status(400).json({ error: 'Invalid username or password' });
     }
 
-    // Find the user in the users array
     const user = users.find((u) => u.username === username);
 
-    // Check if the user exists and if the password matches
     if (!user || user.password !== password) {
         return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    // Return a response indicating success
     res.status(200).json({ message: 'Login successful' });
 });
 
@@ -99,7 +89,6 @@ app.get('/api/users', (req, res) => {
  */
 app.get('/api/messages', (req, res) => {
     const { currentUser, recipientUser } = req.query;
-    // Assuming messages is an array of messages
     const filteredMessages = messages.filter(msg => (
         (msg.from === currentUser && msg.to === recipientUser) ||
         (msg.from === recipientUser && msg.to === currentUser)
@@ -120,70 +109,22 @@ app.post('/api/messages', (req, res) => {
 
 /**
  * Websocket handler
-//  */
-// wss.on('connection', (ws) => {
-//     console.log('WebSocket connected');
-
-//     ws.on('message', (message) => {
-//         console.log('Received WebSocket message:', message);
-
-//         // Your existing code for broadcasting...
-//         wss.clients.forEach((client) => {
-//             if (client !== ws && client.readyState === WebSocket.OPEN) {
-//                 try {
-//                     // Assuming message is a JSON string
-//                     const parsedMessage = JSON.parse(message);
-//                     const messageString = JSON.stringify(parsedMessage);
-//                     console.log('Sending WebSocket message:', messageString);
-//                     client.send(messageString);
-//                 } catch (error) {
-//                     console.error('Invalid JSON format:', message);
-//                 }
-//             }
-//         });
-//     });
-// // });
-// wss.on('connection', (ws) => {
-//     console.log('WebSocket connected');
-
-//     ws.on('message', (message) => {
-//         console.log('Received WebSocket message:', JJSON.stringify(message));
-
-//         // Broadcast the received message to all clients
-//         wss.clients.forEach((client) => {
-//             if (client !== ws && client.readyState === WebSocket.OPEN) {
-//                 try {
-//                     // Assuming message is a JSON string
-//                     const parsedMessage = JSON.parse(message);
-//                     const messageString = JSON.stringify(parsedMessage);
-//                     console.log('Sending WebSocket message:', messageString);
-//                     client.send(messageString);
-//                 } catch (error) {
-//                     console.error('Invalid JSON format:', message);
-//                 }
-//             }
-//         });
-//     });
-// });
+*/
 wss.on('connection', (ws) => {
     console.log('WebSocket connected');
 
     ws.on('message', (message) => {
         console.log('Received WebSocket message:', message);
 
-        // Convert the binary message to a string
         const messageString = message.toString('utf-8');
         console.log('Converted WebSocket message to string:', messageString);
 
-        // Broadcast the received message to all clients
         wss.clients.forEach((client) => {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
                 try {
-                    // Assuming message is a JSON string
                     const parsedMessage = JSON.parse(messageString);
                     console.log('Parsed WebSocket message:', parsedMessage);
 
-                    // Broadcast the parsed message to all clients
                     const newMessageString = JSON.stringify(parsedMessage);
                     console.log('Sending WebSocket message:', newMessageString);
                     client.send(newMessageString);
@@ -194,6 +135,7 @@ wss.on('connection', (ws) => {
         });
     });
 });
+
 /**
  * Export users and messages
  */
