@@ -2,7 +2,7 @@
 
 This is a web application for sending and receiving messages.
 
-### Clone this repository
+## Clone this repository
 
 1. Clone this repository in a folder. For example in `/Documents`
 
